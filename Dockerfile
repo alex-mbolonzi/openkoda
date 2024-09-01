@@ -18,7 +18,7 @@ RUN mvn -f openkoda/pom.xml clean install spring-boot:repackage -DskipTests
 FROM eclipse-temurin:17-jdk
 
 # Set the JAR file location
-ARG JAR_FILE=openkoda/build/openkoda-1.7.1.jar
+ARG JAR_FILE=/app/openkoda/target/openkoda-1.7.1.jar
 
 # Set up user and group
 ARG UID=20000
