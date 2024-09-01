@@ -8,6 +8,7 @@ WORKDIR /app
 COPY openkoda/pom.xml ./openkoda/
 COPY openkoda/src/ ./openkoda/src
 COPY openkoda-app/pom.xml ./openkoda-app/
+COPY pom.xml ./
 
 # Build the JAR file
 RUN mvn -f openkoda/pom.xml clean install spring-boot:repackage -DskipTests
