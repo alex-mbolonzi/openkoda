@@ -46,6 +46,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
@@ -76,21 +77,28 @@ import static com.openkoda.controller.common.URLConstants.EXTERNAL_SESSION_ID;
 public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentWithRequestId, HandlerInterceptor {
 
     @Inject
+    @Lazy
     SecureEntityDictionaryRepository secureEntityDictionaryRepository;
     @Inject
+    @Lazy
     OrganizationRepository organizationRepository;
     @Inject
+    @Lazy
     NotificationService notificationService;
     @Inject
+    @Lazy
     NotificationController notificationController;
     @Inject
+    @Lazy
     UrlHelper urlHelper;
     @Inject
+    @Lazy
     TenantResolver tenantResolver;
     @Inject
+    @Lazy
     CaptchaService captchaService;
 
-    @Inject RequestSessionCacheService cacheService;
+    @Inject @Lazy RequestSessionCacheService cacheService;
     @Value("${default.layout:main}")
     String defaultLayoutName;
     @Value("${default.layout.plain:plain}")
@@ -99,9 +107,11 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
     String embeddedLayoutName;
 
     @Inject
+    @Lazy
     SessionService sessionService;
 
     @Autowired(required = false)
+    @Lazy
     private BuildProperties buildProperties;
 
     private static String resourcesVersion;
@@ -113,17 +123,6 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
     public ModelEnricherInterceptor() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmm");
         resourcesVersion = sdf.format(new Date());
-    }
-
-    public ModelEnricherInterceptor(SecureEntityDictionaryRepository secureEntityDictionaryRepository, OrganizationRepository organizationRepository, NotificationService notificationService, NotificationController notificationController, UrlHelper urlHelper, TenantResolver tenantResolver, CaptchaService captchaService, RequestSessionCacheService cacheService) {
-        this.secureEntityDictionaryRepository = secureEntityDictionaryRepository;
-        this.organizationRepository = organizationRepository;
-        this.notificationService = notificationService;
-        this.notificationController = notificationController;
-        this.urlHelper = urlHelper;
-        this.tenantResolver = tenantResolver;
-        this.captchaService = captchaService;
-        this.cacheService = cacheService;
     }
 
     @Override

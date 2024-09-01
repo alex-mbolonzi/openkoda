@@ -8,4 +8,4 @@ do
     esac
 done
 
-mvn ${skipTests}-f ../pom.xml clean package
+mvn ${skipTests}-f ../pom.xml clean install
