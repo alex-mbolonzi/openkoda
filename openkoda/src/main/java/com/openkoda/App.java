@@ -58,7 +58,7 @@ import static com.openkoda.service.dynamicentity.DynamicEntityRegistrationServic
  * <p>App class.</p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- * 
+ *
  */
 @SpringBootApplication(
         scanBasePackages = "com.openkoda", exclude = { SecurityAutoConfiguration.class })
@@ -67,7 +67,7 @@ import static com.openkoda.service.dynamicentity.DynamicEntityRegistrationServic
 @Configuration
 @EnableJpaRepositories(basePackages = {"com.openkoda","com.openkoda.dynamicentity.generated"})
 @EnableTransactionManagement
-public class App extends SpringBootServletInitializer {
+public class App {
     protected static ConfigurableApplicationContext context;
     private static Class mainClass;
 
@@ -83,14 +83,14 @@ public class App extends SpringBootServletInitializer {
     protected static void startApp(Class appClass, String[] args) {
         startApp(appClass, args, false);
     }
-    
+
     protected static void startApp(Class appClass, String[] args, boolean forced) {
         mainClass = appClass;
         if(!forced) {
             boolean isForce = args != null && Arrays.stream(args).anyMatch(a -> "--force".equals(a));
             initializationSafetyCheck(isForce);
         }
-        
+
         System.setProperty("jakarta.xml.bind.JAXBContextFactory", "com.sun.xml.bind.v2.ContextFactory");
         context = SpringApplication.run(appClass, args);
         BasicCustomisationService customisationService = context.getBean(BasicCustomisationService.class);
@@ -123,11 +123,11 @@ public class App extends SpringBootServletInitializer {
     public static void shutdown() {
         System.exit(0);
     }
-    
+
     public static void restart() {
         restart(false);
     }
-    
+
     public static void restart(boolean reloadAllForms) {
 
         System.out.println("*********************************************************************");

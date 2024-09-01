@@ -2,7 +2,7 @@ version: '3'
 
 services:
   openkoda:
-    image: openkoda/openkoda:${VERSION:-latest}
+    image: almbolonzi/openkoda:${VERSION:-latest}
     container_name: openkoda
     ports:
       - "8080:8080"
@@ -31,6 +31,8 @@ services:
   postgres:
     image: 'postgres:14.2'
     container_name: postgres-db
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: openkoda
       POSTGRES_USER: postgres

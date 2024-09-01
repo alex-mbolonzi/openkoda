@@ -89,7 +89,7 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
     TenantResolver tenantResolver;
     @Inject
     CaptchaService captchaService;
-    
+
     @Inject RequestSessionCacheService cacheService;
     @Value("${default.layout:main}")
     String defaultLayoutName;
@@ -103,7 +103,7 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
 
     @Autowired(required = false)
     private BuildProperties buildProperties;
-    
+
     private static String resourcesVersion;
     private Map<String, Object> buildInfo;
 
@@ -113,6 +113,17 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
     public ModelEnricherInterceptor() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmm");
         resourcesVersion = sdf.format(new Date());
+    }
+
+    public ModelEnricherInterceptor(SecureEntityDictionaryRepository secureEntityDictionaryRepository, OrganizationRepository organizationRepository, NotificationService notificationService, NotificationController notificationController, UrlHelper urlHelper, TenantResolver tenantResolver, CaptchaService captchaService, RequestSessionCacheService cacheService) {
+        this.secureEntityDictionaryRepository = secureEntityDictionaryRepository;
+        this.organizationRepository = organizationRepository;
+        this.notificationService = notificationService;
+        this.notificationController = notificationController;
+        this.urlHelper = urlHelper;
+        this.tenantResolver = tenantResolver;
+        this.captchaService = captchaService;
+        this.cacheService = cacheService;
     }
 
     @Override
@@ -129,7 +140,7 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
         if (requestSessionMeta.getExternalSessionId() != null) {
             RequestContextHolder.getRequestAttributes().setAttribute(EXTERNAL_SESSION_ID, requestSessionMeta.getExternalSessionId(), 0);
         }
-        
+
         TenantResolver.TenantedResource tr = urlHelper.getTenantedResource(request);
         tenantResolver.setTenantedResource(tr);
 
@@ -146,7 +157,7 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
 
         OrganizationUser loggedUser = user;
         trace("[preHandle] got user");
-        
+
         if (loggedUser.hasGlobalOrOrgPrivilege(Privilege.readOrgData, orgId)) {
             Organization org = organizationRepository.findOne(orgId);
             if (org == null) {
@@ -170,27 +181,27 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
             return;
         }
 
-        
+
         Map<String, Object> existingModel = modelAndView.getModel();
         //resolve org
 
         boolean modelHasOrganization = existingModel != null && existingModel.containsKey(organizationEntity.name);
         boolean modelHasOrganizationId = existingModel != null && existingModel.containsKey(organizationEntityId.name);
-        
+
 
 
         RequestSessionContextMetadata<ModelCache> requestSessionMeta = cacheService.getRequestSessionMetadata(request);
-        ModelCache requestSessionModel = cacheService.tryGet(ModelCache.class, () -> 
+        ModelCache requestSessionModel = cacheService.tryGet(ModelCache.class, () ->
             enrichModel(request, modelAndView, existingModel, modelHasOrganization, modelHasOrganizationId,
                     requestSessionMeta)
         );
-        
+
         existingModel.putAll(requestSessionModel.getModel());
     }
 
     /**
      * Adds several variables, dictionary values etc., objects commonly used in multiple cases
-     * 
+     *
      * @param request
      * @param modelAndView
      * @param existingModel
@@ -260,7 +271,7 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
         if(buildInfo == null) {
             buildInfo = buildAppInfo();
         }
-        
+
         model.put(PageAttributes.buildInfo.name, buildInfo);
         existingModel.put(PageAttributes.modelAndView.name, modelAndView);
 
@@ -274,14 +285,14 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
             } else {
                 organizationIds = user.get().getOrganizationIds();
             }
-            
+
             // perform following model addons only if it's not a 'widget' session/scope
             if(!requestSessionMeta.isWidget()) {
                 List<Notification> usersUnreadNotificationsList = notificationService.getUsersUnreadNotifications(userId, organizationIds, PageRequest.of(0, 5));
-      
+
                 String unreadNotificationsIdListString = notificationService.getIdListAsString(usersUnreadNotificationsList);
                 int unreadNotificationsNumber = notificationService.getUsersUnreadNotificationsNumber(userId, organizationIds);
-      
+
                 model.put(readNotificationsList.name, null);
                 model.put(unreadNotificationsList.name, usersUnreadNotificationsList);
                 model.put(PageAttributes.unreadNotificationsIdListString.name, unreadNotificationsIdListString);
@@ -290,8 +301,8 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
 
             model.put(userEntityId.name, userId);
         }
-        
-        
+
+
         debug("[enrichModel] <<< Enriched model");
         if (isUser && user.get().hasGlobalPrivilege(Privilege.canAccessGlobalSettings) && request.getParameterMap().containsKey(DEBUG_MODEL)) {
             modelAndView.setViewName("model");
@@ -299,7 +310,7 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
             modelAndView.getModel().clear();
             modelAndView.getModel().put("modelJson", s);
         }
-        
+
         ModelCache dashboardModel = new ModelCache();
         dashboardModel.setModel(model);
         return dashboardModel;
@@ -338,23 +349,23 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
             if(buildProperties.getTime() != null) {
                 map.put("Timestamp", date.format(LocalDateTime.ofInstant(buildProperties.getTime(), ZoneId.systemDefault())));
             }
-            
+
             map.put("Branch", buildProperties.get("git.branch"));
             map.put("CommitId", buildProperties.get("git.commit.id.abbrev"));
             map.put("Hostname", buildProperties.get("hostname"));
         } else {
             map.put("Version", "HEAD");
             LocalDateTime now = LocalDateTime.now();
-            
+
             map.put("Timestamp", date.format(now));
             map.put("Branch", "local");
             map.put("Hostname", "localhost");
-            
+
         }
-        
+
         return map;
     }
-    
+
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         // After completing the request, if the authentication was for a single request, logout the user
