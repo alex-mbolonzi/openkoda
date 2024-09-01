@@ -7,7 +7,9 @@ WORKDIR /app
 # Copy the Maven project files
 COPY openkoda/pom.xml ./openkoda/
 COPY openkoda/src/ ./openkoda/src
-#COPY docker/entrypoint.sh ./docker/
+COPY openkoda-app/pom.xml ./openkoda-app/
+COPY pom.xml ./
+COPY .git ./.git
 
 # Build the JAR file
 RUN mvn -f openkoda/pom.xml clean install spring-boot:repackage -DskipTests
@@ -16,7 +18,7 @@ RUN mvn -f openkoda/pom.xml clean install spring-boot:repackage -DskipTests
 FROM eclipse-temurin:17-jdk
 
 # Set the JAR file location
-ARG JAR_FILE=openkoda/target/openkoda.jar
+ARG JAR_FILE=/app/openkoda/target/openkoda-1.7.1.jar
 
 # Set up user and group
 ARG UID=20000
@@ -28,10 +30,10 @@ WORKDIR /app
 RUN mkdir /data /var/log/openkoda /config
 
 # Copy the JAR file from the build stage
-COPY --from=build /app/openkoda/target/openkoda.jar /app/application.jar
+COPY --from=build ${JAR_FILE}  application.jar
 
 # Copy the entry script
-COPY docker/entrypoint.sh /app/
+COPY docker/entrypoint.sh .
 
 # Make the entry script executable
 RUN chmod +x entrypoint.sh
