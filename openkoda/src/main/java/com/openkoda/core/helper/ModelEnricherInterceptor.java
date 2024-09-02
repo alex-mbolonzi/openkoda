@@ -111,7 +111,6 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
     SessionService sessionService;
 
     @Autowired(required = false)
-    @Lazy
     private BuildProperties buildProperties;
 
     private static String resourcesVersion;
