@@ -41,9 +41,9 @@ RUN chown -R openkoda-cloud:openkoda-cloud /app /data /config /var/log/openkoda
 RUN chmod ugo+rwX /data /var/log/openkoda /config
 
 # Set environment variables
-ENV SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/openkoda
-ENV SPRING_DATASOURCE_USERNAME=postgres
-ENV SPRING_DATASOURCE_PASSWORD=postgres
+ENV SPRING_DATASOURCE_URL=jdbc:postgresql://dpg-cr9eb4l6l47c73clkp90-a.oregon-postgres.render.com/openkoda
+ENV SPRING_DATASOURCE_USERNAME=openkoda_user
+ENV SPRING_DATASOURCE_PASSWORD=IXLwRknxxYd6Dk0N8j86r83WCYEjDj47
 ENV BASE_URL=http://localhost:8080/
 ENV APPLICATION_ADMIN_EMAIL=almbolonzi@gmail.com
 ENV INIT_ADMIN_USERNAME=admin
