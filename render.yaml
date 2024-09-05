@@ -12,7 +12,7 @@ services:
           property: connectionString
   region: oregon
   dockerContext: .
-  dockerfilePath: ./docker/Dockerfile
+  dockerfilePath: ./Dockerfile
   rootDir: .
 version: "1"
 
