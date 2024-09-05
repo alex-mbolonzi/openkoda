@@ -1,0 +1,22 @@
+# Exported from Render on 2024-09-05T10:43:05Z
+services:
+- type: web
+  name: boma
+  runtime: docker
+  repo: https://github.com/alex-mbolonzi/openkoda-docker
+  plan: free
+  envVars:
+  - key: PORT
+    sync: false
+    fromDatabase:
+          name: openkoda
+          property: connectionString
+  region: oregon
+  dockerContext: .
+  dockerfilePath: ./docker/Dockerfile
+  rootDir: .
+version: "1"
+
+databases:
+  - name: openkoda # A PostgreSQL database named django-app-db running on a free instance
+    plan: free
