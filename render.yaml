@@ -18,6 +18,7 @@ services:
   dockerContext: .
   dockerfilePath: ./Dockerfile
   rootDir: .
+  healthCheckPath: /
 version: "1"
 
 databases:
