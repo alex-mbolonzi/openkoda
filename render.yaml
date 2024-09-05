@@ -7,9 +7,13 @@ services:
   plan: free
   envVars:
   - key: PORT
-    fromDatabase:
-          name: openkoda
-          property: connectionString
+    value: 8080
+  - key: SPRING_DATASOURCE_URL
+    value: jdbc:postgresql://dpg-crcotdij1k6c73cqh86g-a/openkoda_3lit
+  - key: SPRING_DATASOURCE_USERNAME
+    value: openkoda_3lit_user
+  - key: SPRING_DATASOURCE_PASSWORD
+    value: JM1iJCVG6eW71jujez814fHVuzu3yW1c
   region: oregon
   dockerContext: .
   dockerfilePath: ./Dockerfile
